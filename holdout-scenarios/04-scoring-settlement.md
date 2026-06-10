@@ -43,3 +43,30 @@ Covers `specs/features/04-scoring-settlement.md`. Base scoring (exact 3 / winner
 ### S8 — Determinism
 **Action:** score the same `(prediction, result, rule set)` twice.
 **Expected:** identical `PointsBreakdown` both times (pure function, no I/O).
+
+## Explicit outcome assertions (SC-01, SC-03, SC-04, SC-06)
+### S9 — Exact score, group stage, ×1.0 baseline (SC-01)
+**Setup:** single match, group stage (multiplier = ×1.0). Alice predicts 2–1. Result is 2–1.
+**Action:** settle the match.
+**Expected:** Alice receives exactly **3 points** (3 × 1.0). The ×1.0 multiplier is applied and has no effect — the base value is preserved without rounding or truncation.
+
+### S10 — Correct winner, wrong score, semi-final multiplier (SC-03)
+**Setup:** single match, semi-final (multiplier = ×2.0). Alice predicts 2–0. Result is 3–0 (home win, correct winner, wrong score).
+**Action:** settle the match.
+**Expected:** Alice receives exactly **2 points** (1 base × 2.0). Not 3, not 1 — the winner-only outcome at a high multiplier stage.
+
+### S11 — Correct draw, wrong score (SC-04)
+**Setup:** single group-stage match. Alice predicts 1–1. Result is 0–0 (draw, wrong score).
+**Action:** settle the match.
+**Expected:** Alice receives exactly **1 point** (correct draw outcome, BR-001). Not 3 (that would require exact score 0–0).
+
+### S12 — Completely wrong prediction awards zero (SC-06)
+**Setup:** single group-stage match. Alice predicts 3–0. Result is 0–2 (wrong winner, wrong score).
+**Action:** settle the match.
+**Expected:** Alice receives exactly **0 points**. No partial credit for any field.
+
+## Forward-only rule application
+### S13 — Rule change does not retroactively affect settled matches (SC-21)
+**Setup:** M1 already settled with exact-score rule = 3 pts; Alice received 3 pts. Admin now changes exact-score points to **5**.
+**Action:** read Alice's total; then settle a new match M4 where Alice predicts exactly.
+**Expected:** Alice's M1 points remain **3** (the rule in effect at M1's kickoff). Alice earns **5** pts for M4. Past settlements are immutable to rule changes.

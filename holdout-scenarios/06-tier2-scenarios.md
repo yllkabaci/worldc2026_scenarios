@@ -25,6 +25,9 @@
 - **SC-29** — Blocked user predicting via the API directly → **403** (BR-009). *(Spine note: blocked-cannot-predict is asserted in `03`; the direct-API angle is the tier-2 addition.)*
 - **SC-28** — Blocking a user removes their standings from the leaderboard immediately (UC-A08). *(Tier 2 — spine leaves blocked-user removal deferred.)*
 
+## Admin rule configuration audit (tier 2)
+- **SC-22** — Admin changes any business rule (e.g. exact-score points from 3 → 5). Expected: an **immutable audit log entry** is written containing: actor (admin identity), timestamp, field changed, old value, new value (BR-022). The entry cannot be edited or deleted. This is distinct from the re-settlement audit in M7, which covers result changes — this covers rule configuration changes.
+
 ## Real-time (tier 2 — MVP is REST)
 - **SC-32** — Admin updates a live score → connected clients see it within ~2s without refresh.
 - **SC-33** — Admin confirms a result → affected totals and ranks update in real time.

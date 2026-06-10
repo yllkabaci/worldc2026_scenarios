@@ -47,3 +47,19 @@ Covers `specs/features/03-predictions.md`. Distinct verbs: `POST` create, `PUT` 
 **Setup:** M1 OPEN; Alice predicted 2–1.
 **Action:** Bob requests Alice's M1 prediction (or the match's prediction list) while M1 is OPEN.
 **Expected:** Alice's score is **not** disclosed. After M1 locks, it may be revealed.
+
+## Window boundary (explicit 60-min rule assertions)
+### P10 — Prediction blocked inside the 60-min window (SC-08)
+**Setup:** M1 kickoff = T0+10h; deadline = kickoff − 60m = T0+9h; clock = T0+9h30m (30 min before kickoff, inside the closed window).
+**Action:** Alice `POST`s a prediction for M1.
+**Expected:** `409` (`PredictionWindowClosed`); nothing stored. The 60-min rule is enforced even though the match has not started.
+
+### P11 — Prediction allowed outside the 60-min window (SC-09)
+**Setup:** same M1; clock = T0+8h30m (90 min before kickoff, outside the closed window — window still open).
+**Action:** Alice `POST`s a prediction for M1.
+**Expected:** `201`; prediction stored. The window is open at 90 min before kickoff.
+
+### P12 — Edit explicitly allowed within the open window (SC-10)
+**Setup:** Alice already predicted M1 = 1–0; clock = T0+8h30m (window still open).
+**Action:** Alice `PUT`s M1 prediction = 2–1.
+**Expected:** stored prediction updates to 2–1; `200`. Edit is allowed at any point while the window is open, with no limit on the number of edits (BR-006).

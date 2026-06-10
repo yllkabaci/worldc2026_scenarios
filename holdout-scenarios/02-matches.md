@@ -37,3 +37,8 @@ Covers `specs/features/02-matches.md`. Includes cancel/postpone and audited re-s
 **Setup:** M1 already settled at 2–1 (Alice +3).
 **Action:** admin re-records M1 as 1–1 **with a single confirmation**; then **with the required second confirmation**.
 **Expected:** the single-confirmation attempt is **rejected** (no change). The double-confirmed change writes an **immutable audit entry** and **re-runs settlement**, correcting totals (Alice's M1 now scores as a draw-outcome = 1, not 3; her total drops by 2). The audit trail records actor, before/after, and timestamp.
+
+### M8 — Double-confirmation gate is a hard requirement (SC-23)
+**Setup:** M1 already settled and points distributed to users.
+**Action:** admin submits a result change via a **single** confirmation attempt — no second confirmation step.
+**Expected:** the change is **rejected outright** (`409` or equivalent); the existing result and all user point totals remain unchanged. This asserts the gate itself, independent of whether re-settlement logic is correct (M7 tests both together; this isolates the gate).
